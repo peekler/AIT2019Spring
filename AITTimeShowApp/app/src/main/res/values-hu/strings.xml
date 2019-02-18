@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AITTimeShowApp</string>
+    <string name="btn_show_time">Mutasd az időt</string>
+    <string name="text_hello">Hello ez az eredmény</string>
+</resources>

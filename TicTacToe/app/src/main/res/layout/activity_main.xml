@@ -8,10 +8,43 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
 
-    <hu.ait.tictactoe.view.TicTacToeView
-            android:id="@+id/ticTacToeView"
-            android:layout_width="250dp"
-            android:layout_height="250dp"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+    >
+
+        <hu.ait.tictactoe.view.TicTacToeView
+                android:id="@+id/ticTacToeView"
+                android:layout_width="250dp"
+                android:layout_height="250dp"/>
+
+    </LinearLayout>
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:shimmer_auto_start="true">
+
+        <TextView
+                android:id="@+id/tvStatus"
+                android:textSize="24sp"
+                android:text="Hello in TicTacToe game!"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <ToggleButton
+            android:id="@+id/toggleFlag"
+            android:textOn="Try mode"
+            android:textOff="Flag mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     <Button
             android:id="@+id/btnRestart"

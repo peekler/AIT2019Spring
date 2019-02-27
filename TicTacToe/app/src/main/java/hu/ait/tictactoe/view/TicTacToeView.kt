@@ -1,13 +1,12 @@
 package hu.ait.tictactoe.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PointF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import hu.ait.tictactoe.MainActivity
+import hu.ait.tictactoe.R
 import hu.ait.tictactoe.model.TicTacToeModel
 
 
@@ -15,7 +14,11 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
 
     private val paintBackground = Paint()
     private val paintLine = Paint()
+    private val paintText = Paint()
 
+    private var bitmapBg = BitmapFactory.decodeResource(
+        resources, R.drawable.dog
+    )
 
 
     init {
@@ -25,10 +28,27 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
         paintLine.color = Color.WHITE
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 8f
+
+        paintText.color = Color.RED
+        paintText.textSize = 70f
     }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        paintText.textSize = height / 3f
+
+        bitmapBg = Bitmap.createScaledBitmap(bitmapBg,
+            width, height, false)
+    }
+
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paintBackground)
+
+        canvas?.drawBitmap(bitmapBg, 0f, 0f, null)
+
+        canvas?.drawText("4", 20f, height/3f, paintText)
 
         drawGameBoard(canvas)
 
@@ -89,6 +109,12 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
                 TicTacToeModel.setFieldContent(tX, tY, TicTacToeModel.nextPlayer)
                 TicTacToeModel.switchPlayer()
                 invalidate()
+
+                var status = "Next player is X"
+                if (TicTacToeModel.nextPlayer == TicTacToeModel.CIRCLE){
+                    status = "Next player is O"
+                }
+                (context as MainActivity).setStatusText(status)
             }
         }
 
@@ -96,10 +122,6 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
         return true
     }
 
-    public fun resetGame(){
-        TicTacToeModel.resetModel()
-        invalidate()
-    }
 
 }
 

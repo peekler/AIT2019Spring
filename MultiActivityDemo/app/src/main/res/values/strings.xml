@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MultiActivityDemo</string>
+
+    <string name="text_grade">Name: %1$s Grade: %2$s</string>
+
+
+</resources>

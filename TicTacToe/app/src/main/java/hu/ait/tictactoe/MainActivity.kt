@@ -3,6 +3,7 @@ package hu.ait.tictactoe
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import hu.ait.tictactoe.model.TicTacToeModel
 import hu.ait.tictactoe.view.TicTacToeView
@@ -21,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+
 
     public fun TicTacToeView.resetGame(){
         TicTacToeModel.resetModel()

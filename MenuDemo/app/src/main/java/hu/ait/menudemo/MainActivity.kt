@@ -1,5 +1,6 @@
 package hu.ait.menudemo
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -27,6 +28,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "HELP", Toast.LENGTH_LONG).show()
         } else if (item?.itemId == R.id.action_start){
             Toast.makeText(this, "STARTING...", Toast.LENGTH_LONG).show()
+        } else if (item?.itemId == R.id.action_bottom){
+            startActivity(Intent(this, BottomNavActivity::class.java))
+        } else if (item?.itemId == R.id.action_nav){
+            startActivity(Intent(this, NavDrawerActivity::class.java))
         }
 
 

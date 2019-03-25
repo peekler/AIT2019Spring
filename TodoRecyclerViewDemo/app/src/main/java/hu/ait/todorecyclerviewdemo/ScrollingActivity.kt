@@ -4,13 +4,20 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.StaggeredGridLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import hu.ait.todorecyclerviewdemo.adapter.TodoAdapter
 import hu.ait.todorecyclerviewdemo.data.Todo
+import hu.ait.todorecyclerviewdemo.touch.TodoReyclerTouchCallback
 import kotlinx.android.synthetic.main.activity_scrolling.*
+import kotlinx.android.synthetic.main.new_todo_dialog.view.*
 import java.util.*
 
 class ScrollingActivity : AppCompatActivity() {
@@ -32,23 +39,42 @@ class ScrollingActivity : AppCompatActivity() {
 
 
         todoAdapter = TodoAdapter(this)
+
         recyclerTodo.layoutManager = LinearLayoutManager(this)
+
+        //recyclerTodo.layoutManager = GridLayoutManager(this, 2)
+        //recyclerTodo.layoutManager = StaggeredGridLayoutManager(2,
+        //    StaggeredGridLayoutManager.VERTICAL)
+
         recyclerTodo.adapter = todoAdapter
+
+        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        recyclerTodo.addItemDecoration(itemDecoration)
+
+        val callback = TodoReyclerTouchCallback(todoAdapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(recyclerTodo)
     }
 
     private fun showAddTodoDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setTitle("Enter todo")
-        val input = EditText(this)
-        dialogBuilder.setView(input)
+        //val input = EditText(this)
+        //dialogBuilder.setView(input)
+
+        val dialogView = layoutInflater.inflate(R.layout.new_todo_dialog,
+            null, false)
+        val inputTodo = dialogView.etTodo
+        val inputDate = dialogView.etDate
+        dialogBuilder.setView(dialogView)
+
         dialogBuilder.setNegativeButton("Cancel") {
                 dialog, button -> dialog.dismiss()
         }
         dialogBuilder.setPositiveButton("Add") {
                 dialog, button ->
-            val todo = Todo(
-                Date(System.currentTimeMillis()).toString(),
-                false, input.text.toString())
+            val todo = Todo(inputDate.text.toString(),
+                false, inputTodo.text.toString())
 
             todoAdapter.addTodo(todo)
         }

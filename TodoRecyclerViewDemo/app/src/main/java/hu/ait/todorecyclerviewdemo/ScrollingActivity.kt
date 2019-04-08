@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import hu.ait.todorecyclerviewdemo.adapter.TodoAdapter
+import hu.ait.todorecyclerviewdemo.data.AppDatabase
 import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.touch.TodoReyclerTouchCallback
 import kotlinx.android.synthetic.main.activity_scrolling.*
@@ -73,10 +74,21 @@ class ScrollingActivity : AppCompatActivity() {
         }
         dialogBuilder.setPositiveButton("Add") {
                 dialog, button ->
-            val todo = Todo(inputDate.text.toString(),
-                false, inputTodo.text.toString())
 
-            todoAdapter.addTodo(todo)
+            Thread {
+                val todo = Todo(null, inputDate.text.toString(),
+                    false, inputTodo.text.toString())
+
+                AppDatabase.getInstance(this@ScrollingActivity).todoDao().insertTodo(
+                    todo
+                )
+
+                runOnUiThread{
+                    todoAdapter.addTodo(todo)
+                }
+            }.start()
+
+
         }
         dialogBuilder.show()
     }

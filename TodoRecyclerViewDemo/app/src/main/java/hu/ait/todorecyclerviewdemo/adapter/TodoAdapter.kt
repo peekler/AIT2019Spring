@@ -14,11 +14,7 @@ import java.util.*
 class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelperCallback {
 
 
-    var todoItems = mutableListOf<Todo>(
-        Todo("21. 03. 2019.", false, "Todo1"),
-        Todo("22. 03. 2019.", false, "Todo2"),
-        Todo("22. 03. 2019.", false, "Todo3")
-    )
+    var todoItems = mutableListOf<Todo>()
 
     private val context: Context
     constructor(context: Context) : super() {

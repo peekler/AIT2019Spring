@@ -21,7 +21,12 @@ import kotlinx.android.synthetic.main.activity_scrolling.*
 import kotlinx.android.synthetic.main.new_todo_dialog.view.*
 import java.util.*
 
-class ScrollingActivity : AppCompatActivity() {
+class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
+
+
+    companion object {
+        val KEY_ITEM_TO_EDIT = "KEY_ITEM_TO_EDIT"
+    }
 
     lateinit var todoAdapter : TodoAdapter
 
@@ -38,60 +43,57 @@ class ScrollingActivity : AppCompatActivity() {
             showAddTodoDialog()
         }
 
+        initRecyclerViewFromDB()
+    }
 
-        todoAdapter = TodoAdapter(this)
+    private fun initRecyclerViewFromDB() {
+        Thread {
+            var todoList = AppDatabase.getInstance(this@ScrollingActivity).todoDao().getAllTodos()
 
-        recyclerTodo.layoutManager = LinearLayoutManager(this)
+            runOnUiThread {
+                // Update UI
 
-        //recyclerTodo.layoutManager = GridLayoutManager(this, 2)
-        //recyclerTodo.layoutManager = StaggeredGridLayoutManager(2,
-        //    StaggeredGridLayoutManager.VERTICAL)
+                todoAdapter = TodoAdapter(this, todoList)
 
-        recyclerTodo.adapter = todoAdapter
+                recyclerTodo.layoutManager = LinearLayoutManager(this)
 
-        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        recyclerTodo.addItemDecoration(itemDecoration)
+                //recyclerTodo.layoutManager = GridLayoutManager(this, 2)
+                //recyclerTodo.layoutManager = StaggeredGridLayoutManager(2,
+                //    StaggeredGridLayoutManager.VERTICAL)
 
-        val callback = TodoReyclerTouchCallback(todoAdapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerTodo)
+                recyclerTodo.adapter = todoAdapter
+
+                val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+                recyclerTodo.addItemDecoration(itemDecoration)
+
+                val callback = TodoReyclerTouchCallback(todoAdapter)
+                val touchHelper = ItemTouchHelper(callback)
+                touchHelper.attachToRecyclerView(recyclerTodo)
+            }
+
+        }.start()
     }
 
     private fun showAddTodoDialog() {
-        val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setTitle("Enter todo")
-        //val input = EditText(this)
-        //dialogBuilder.setView(input)
-
-        val dialogView = layoutInflater.inflate(R.layout.new_todo_dialog,
-            null, false)
-        val inputTodo = dialogView.etTodo
-        val inputDate = dialogView.etDate
-        dialogBuilder.setView(dialogView)
-
-        dialogBuilder.setNegativeButton("Cancel") {
-                dialog, button -> dialog.dismiss()
-        }
-        dialogBuilder.setPositiveButton("Add") {
-                dialog, button ->
-
-            Thread {
-                val todo = Todo(null, inputDate.text.toString(),
-                    false, inputTodo.text.toString())
-
-                AppDatabase.getInstance(this@ScrollingActivity).todoDao().insertTodo(
-                    todo
-                )
-
-                runOnUiThread{
-                    todoAdapter.addTodo(todo)
-                }
-            }.start()
-
-
-        }
-        dialogBuilder.show()
+        TodoDialog().show(supportFragmentManager, "TAG_TODO_DIALOG")
     }
+
+    var editIndex: Int = -1
+
+    public fun showEditTodoDialog(todoToEdit: Todo, idx: Int) {
+        editIndex = idx
+        val editItemDialog = TodoDialog()
+
+        val bundle = Bundle()
+        bundle.putSerializable(KEY_ITEM_TO_EDIT, todoToEdit)
+        editItemDialog.arguments = bundle
+
+        editItemDialog.show(supportFragmentManager,
+            "EDITITEMDIALOG")
+    }
+
+
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -108,5 +110,29 @@ class ScrollingActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+
+
+    override fun todoCreated(item: Todo) {
+        Thread {
+            var newId = AppDatabase.getInstance(this).todoDao().insertTodo(item)
+
+            item.todoId = newId
+
+            runOnUiThread {
+                todoAdapter.addTodo(item)
+            }
+        }.start()
+    }
+
+    override fun todoUpdated(item: Todo) {
+        Thread {
+            AppDatabase.getInstance(this).todoDao().updateTodo(item)
+
+            runOnUiThread {
+                todoAdapter.updateTodo(item, editIndex)
+            }
+        }.start()
     }
 }

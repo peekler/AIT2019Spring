@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import hu.ait.todorecyclerviewdemo.R
+import hu.ait.todorecyclerviewdemo.ScrollingActivity
+import hu.ait.todorecyclerviewdemo.data.AppDatabase
 import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.touch.TodoTouchHelperCallback
 import kotlinx.android.synthetic.main.todo_row.view.*
@@ -17,8 +19,11 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelpe
     var todoItems = mutableListOf<Todo>()
 
     private val context: Context
-    constructor(context: Context) : super() {
+
+
+    constructor(context: Context, listTodos: List<Todo>) : super() {
         this.context = context
+        todoItems.addAll(listTodos)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -38,6 +43,33 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelpe
         viewHolder.tvDate.text = todo.createDate
         viewHolder.cbDone.text = todo.todoText
         viewHolder.cbDone.isChecked = todo.done
+
+        viewHolder.btnDelete.setOnClickListener {
+            deleteTodo(viewHolder.adapterPosition)
+        }
+
+        viewHolder.cbDone.setOnClickListener {
+            todo.done = viewHolder.cbDone.isChecked
+            updateTodo(todo)
+        }
+
+        viewHolder.btnEdit.setOnClickListener {
+            (context as ScrollingActivity).showEditTodoDialog(todo,
+                viewHolder.adapterPosition)
+        }
+    }
+
+    fun updateTodo(todo: Todo) {
+        Thread{
+            AppDatabase.getInstance(context).todoDao().updateTodo(todo)
+
+
+        }.start()
+    }
+
+    fun updateTodo(todo: Todo, editIndex: Int) {
+        todoItems.set(editIndex, todo)
+        notifyItemChanged(editIndex)
     }
 
 
@@ -47,10 +79,19 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelpe
         notifyItemInserted(0)
     }
 
+    fun deleteTodo(deletePosition: Int) {
+        Thread{
+            AppDatabase.getInstance(context).todoDao().deleteTodo(todoItems.get(deletePosition))
+
+            (context as ScrollingActivity).runOnUiThread {
+                todoItems.removeAt(deletePosition)
+                notifyItemRemoved(deletePosition)
+            }
+        }.start()
+    }
 
     override fun onDismissed(position: Int) {
-        todoItems.removeAt(position)
-        notifyItemRemoved(position)
+        deleteTodo(position)
     }
 
     override fun onItemMoved(fromPosition: Int, toPosition: Int) {
@@ -61,6 +102,8 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelpe
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var tvDate = itemView.tvDate
         var cbDone = itemView.cbDone
+        var btnDelete = itemView.btnDelete
+        var btnEdit = itemView.btnEdit
     }
 
 }

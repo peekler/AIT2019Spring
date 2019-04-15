@@ -11,6 +11,9 @@ interface TodoDAO {
     @Insert
     fun insertTodo(todo: Todo): Long
 
+    @Insert
+    fun insertTodos(vararg todo: Todo): List<Long>
+
     @Delete
     fun deleteTodo(todo: Todo)
 

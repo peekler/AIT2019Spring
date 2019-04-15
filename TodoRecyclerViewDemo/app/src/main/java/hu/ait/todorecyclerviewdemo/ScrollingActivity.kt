@@ -1,6 +1,7 @@
 package hu.ait.todorecyclerviewdemo
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -19,6 +20,7 @@ import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.touch.TodoReyclerTouchCallback
 import kotlinx.android.synthetic.main.activity_scrolling.*
 import kotlinx.android.synthetic.main.new_todo_dialog.view.*
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import java.util.*
 
 class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
@@ -43,8 +45,33 @@ class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
             showAddTodoDialog()
         }
 
+        if (!wasOpenedEarlier()) {
+            MaterialTapTargetPrompt.Builder(this)
+                .setTarget(R.id.fab)
+                .setPrimaryText("New TODO")
+                .setSecondaryText("Click here to create new todo items")
+                .show()
+        }
+
+        saveFirstOpenInfo()
+
         initRecyclerViewFromDB()
     }
+
+    fun saveFirstOpenInfo() {
+        var sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+        var editor = sharedPref.edit()
+        editor.putBoolean("KEY_WAS_OPEN", true)
+        editor.apply()
+    }
+
+    fun wasOpenedEarlier() : Boolean {
+        var sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+
+        return sharedPref.getBoolean("KEY_WAS_OPEN", false)
+    }
+
+
 
     private fun initRecyclerViewFromDB() {
         Thread {

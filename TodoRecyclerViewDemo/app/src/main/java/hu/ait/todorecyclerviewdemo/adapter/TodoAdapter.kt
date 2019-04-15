@@ -38,7 +38,7 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>, TodoTouchHelpe
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val todo  = todoItems.get(position)
+        val todo  = todoItems.get(viewHolder.adapterPosition)
 
         viewHolder.tvDate.text = todo.createDate
         viewHolder.cbDone.text = todo.todoText

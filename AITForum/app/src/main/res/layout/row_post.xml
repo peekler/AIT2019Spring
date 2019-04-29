@@ -32,5 +32,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+        <ImageView
+                android:id="@+id/ivPhoto"
+                android:visibility="gone"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
+
+
+        <Button
+                android:id="@+id/btnDeletePost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"/>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -78,7 +78,7 @@ class ForumActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                                 Toast.makeText(this@ForumActivity, "update: ${dc.document.id}", Toast.LENGTH_LONG).show()
                             }
                             DocumentChange.Type.REMOVED -> {
-
+                                postsAdapter.removePostByKey(dc.document.id)
                             }
                         }
                     }

@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             etEmail.text.toString(), etPassword.text.toString()
         ).addOnSuccessListener {
             val user = it.user
+
             user.updateProfile(
                 UserProfileChangeRequest.Builder()
                     .setDisplayName(userNameFromEmail(user.email!!))

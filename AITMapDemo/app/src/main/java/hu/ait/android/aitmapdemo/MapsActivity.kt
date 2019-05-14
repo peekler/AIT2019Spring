@@ -110,6 +110,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
             true
         }
 
+        mMap.setOnMarkerDragListener(object:GoogleMap.OnMarkerDragListener{
+            override fun onMarkerDragEnd(p0: Marker?) {
+                Toast.makeText(
+                    this@MapsActivity,"Lat: ${p0?.position?.latitude}," +
+                            " Lng: ${p0?.position?.longitude}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            override fun onMarkerDragStart(p0: Marker?) {
+            }
+
+            override fun onMarkerDrag(p0: Marker?) {
+            }
+
+        })
+
 
         val polyRect: PolygonOptions = PolygonOptions().add(
             LatLng(44.0, 19.0),
